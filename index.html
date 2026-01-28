@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iOS 26 Mini App Sava Edition</title>
+    <title>Sava App Fixed</title>
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
+        /* ГЛОБАЛЬНЫЕ СБРОСЫ */
         * {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
@@ -35,13 +36,15 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* ГЛАВНЫЙ КОНТЕЙНЕР */
         .app-container {
             width: 92%;
             max-width: 440px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            padding-top: 25px;
+            /* ИСПРАВЛЕНИЕ: Увеличили отступ, чтобы кнопка "Закрыть" не мешала */
+            padding-top: 65px; 
             z-index: 5;
         }
 
@@ -71,20 +74,19 @@
             flex: 1;
             margin-left: 15px;
             display: flex;
-            align-items: center; /* Выравниваем ник и эмодзи по горизонтали */
+            align-items: center;
             gap: 8px;
         }
 
         .user-name {
             font-size: 20px;
-            font-weight: 900; /* Максимально жирный шрифт */
+            font-weight: 900;
             letter-spacing: -0.5px;
         }
 
-        /* Контейнер для JSON-эмодзи */
         .emoji-lottie {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
         }
 
         .balance-chip {
@@ -94,18 +96,17 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .star { color: #FFD700; font-size: 16px; }
 
-        /* СЕТКА КНОПОК */
+        /* КНОПКИ */
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
             gap: 15px;
-            height: 320px;
+            height: 300px;
             animation: appear 0.8s ease-out;
         }
 
@@ -121,14 +122,14 @@
             justify-content: space-between;
             text-decoration: none;
             color: white;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s ease;
         }
 
         .glass-btn:active { transform: scale(0.94); background: rgba(255, 255, 255, 0.15); }
         .btn-tall { grid-row: 1 / 3; }
         .btn-emoji { font-size: 32px; }
         .btn-label { font-weight: 700; font-size: 17px; margin-top: 10px; display: block; }
-        .btn-sub { font-size: 11px; color: rgba(255, 255, 255, 0.4); margin-top: 5px; line-height: 1.3; }
+        .btn-sub { font-size: 11px; color: rgba(255, 255, 255, 0.4); margin-top: 5px; }
 
         /* МЕНЮ */
         .bottom-nav {
@@ -159,7 +160,7 @@
 
         .nav-item.active { color: white; transform: translateY(-2px); }
         .nav-icon { width: 24px; height: 24px; fill: currentColor; margin-bottom: 5px; }
-        .nav-text { font-size: 9px; font-weight: 700; letter-spacing: 0.6px; }
+        .nav-text { font-size: 9px; font-weight: 700; }
 
         @keyframes appear {
             from { opacity: 0; transform: translateY(20px); }
@@ -171,15 +172,13 @@
 
     <div class="app-container">
         <header class="profile-card">
-            <img src="Sava.jpg" class="avatar" alt="Sava">
-            
+            <img src="Sava.png" class="avatar" alt="Sava">
             <div class="user-info">
                 <span class="user-name">Sava</span>
                 <div class="emoji-lottie">
                     <lottie-player src="157.json" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
-
             <div class="balance-chip">
                 <span class="star">★</span>
                 <span>5,420</span>
@@ -191,7 +190,7 @@
                 <span class="btn-emoji">🚀</span>
                 <div>
                     <span class="btn-label">Миссии</span>
-                    <span class="btn-sub">Задачи и награды</span>
+                    <span class="btn-sub">Задачи</span>
                 </div>
             </a>
             <a href="#" class="glass-btn">
@@ -218,7 +217,7 @@
         </a>
         <a href="#" class="nav-item" onclick="navClick(this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
-            <span class="nav-text">КЕЙСЫ</span>
+            <span class="nav-text">ВИДЕО</span>
         </a>
         <a href="#" class="nav-item" onclick="navClick(this)">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
