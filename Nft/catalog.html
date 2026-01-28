@@ -3,36 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFT Каталог</title>
+    <title>NFT Каталог (Оптимизированный)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
-        body { background: #0a0a0c; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-width: 1100px; margin: 0 auto; }
-        .card { background: #16161a; border-radius: 12px; padding: 10px; border: 1px solid #2d2d33; }
-        .anim-box { width: 100px; height: 100px; margin: 0 auto; }
-        .id-label { margin-top: 8px; font-weight: bold; color: #00e5ff; font-size: 14px; }
+        body { background: #0a0a0c; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .card { 
+            background: #16161a; border-radius: 12px; padding: 10px; 
+            border: 1px solid #2d2d33; min-height: 160px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .anim-box { width: 100px; height: 100px; }
+        .id-label { margin-top: 8px; font-weight: bold; color: #00e5ff; }
+        .status { font-size: 10px; opacity: 0.5; margin-top: 5px; }
     </style>
 </head>
 <body>
-    <h1>КАТАЛОГ NFT</h1>
-    <p style="opacity: 0.6;">Выбирай подарки для кейса «Стартер»</p>
+    <h1>NFT КАТАЛОГ</h1>
+    <p style="text-align:center; opacity:0.6;">Листай медленно, анимации подгружаются при скролле</p>
     <div class="grid" id="container"></div>
 
     <script>
         const container = document.getElementById('container');
+
         for (let i = 2; i <= 155; i++) {
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `<div id="lottie-${i}" class="anim-box"></div><div class="id-label">№${i}</div>`;
+            card.innerHTML = `
+                <div id="lottie-${i}" class="anim-box" data-path="${i}.json"></div>
+                <div class="id-label">№${i}</div>
+                <div class="status">Ожидание...</div>
+            `;
             container.appendChild(card);
 
-            lottie.loadAnimation({
-                container: document.getElementById(`lottie-${i}`),
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                path: `${i}.json` // Ищет файлы прямо в папке nft
-            });
+            // Настраиваем "наблюдатель": загружаем только когда карточка в поле зрения
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        const path = el.getAttribute('data-path');
+                        
+                        lottie.loadAnimation({
+                            container: el,
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: true,
+                            path: path
+                        });
+                        
+                        el.nextElementSibling.nextElementSibling.innerText = "Загружено";
+                        observer.unobserve(el); // Больше не следим за этой карточкой
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(card.querySelector('.anim-box'));
         }
     </script>
 </body>
