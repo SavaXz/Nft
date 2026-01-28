@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        body { 
+            background: #0d0d0d; color: white; font-family: -apple-system, sans-serif; 
+            margin: 0; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; height: 100vh; overflow: hidden;
+        }
+        .case-outer {
+            width: 90%; max-width: 420px; position: relative; 
+            background: #1a1a1a; border: 2px solid #333; border-radius: 20px;
+            overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        .pointer {
+            position: absolute; left: 50%; top: 0; bottom: 0;
+            width: 4px; background: #ff3e3e; z-index: 10; transform: translateX(-2px);
+            box-shadow: 0 0 15px rgba(255, 62, 62, 0.5);
+        }
+        .shards-container { height: 160px; display: flex; align-items: center; }
+        .shards {
+            display: flex; will-change: transform;
+            transition: transform 5s cubic-bezier(0.1, 0, 0.05, 1);
+        }
+        .item {
+            min-width: 130px; height: 140px; margin: 0 5px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.03); border-radius: 15px; border-bottom: 4px solid #444;
+        }
+        .item-anim { width: 85px; height: 85px; }
+        .item-name { font-size: 10px; margin-top: 10px; font-weight: bold; opacity: 0.8; }
+        
+        button {
+            margin-top: 40px; padding: 18px 55px; background: #ffd700;
+            border: none; border-radius: 50px; font-weight: 900; font-size: 18px;
+            color: #000; cursor: pointer; box-shadow: 0 5px 20px rgba(255,215,0,0.2);
+        }
+        button:disabled { opacity: 0.3; filter: grayscale(1); }
+    </style>
+</head>
+<body>
+
+    <h2 id="title">MY MYSTERY BOX</h2>
+
+    <div class="case-outer">
+        <div class="pointer"></div>
+        <div class="shards-container">
+            <div id="shards" class="shards"></div>
+        </div>
+    </div>
+
+    <button id="spin-btn" onclick="spin()">ОТКРЫТЬ</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const rarities = [
+            { n: 'COMMON', c: '#4b69ff' },
+            { n: 'RARE', c: '#8847ff' },
+            { n: 'EPIC', c: '#d32ee6' },
+            { n: 'LEGEND', c: '#ffd700' }
+        ];
+
+        function spin() {
+            const shards = document.getElementById('shards');
+            const btn = document.getElementById('spin-btn');
+            
+            // 1. Очистка
+            btn.disabled = true;
+            lottie.destroy(); // Убиваем старые анимации для экономии RAM
+            
+            shards.style.transition = 'none';
+            shards.style.transform = 'translateX(0)';
+            shards.innerHTML = '';
+
+            const totalItems = 40; 
+            const animations = [];
+
+            // 2. Генерация ленты
+            for (let i = 0; i < totalItems; i++) {
+                const rarity = rarities[Math.floor(Math.random() * rarities.length)];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.style.borderBottomColor = rarity.c;
+                
+                const animId = 'anim-' + i;
+                itemDiv.innerHTML = `
+                    <div id="${animId}" class="item-anim"></div>
+                    <div class="item-name" style="color:${rarity.c}">${rarity.n}</div>
+                `;
+                shards.appendChild(itemDiv);
+
+                // Оптимизация: анимируем только последние 10 штук
+                if (i > totalItems - 12) {
+                    lottie.loadAnimation({
+                        container: document.getElementById(animId),
+                        renderer: 'canvas', // Canvas быстрее для мобилок
+                        loop: true,
+                        autoplay: true,
+                        path: 'sticker.json' 
+                    });
+                } else {
+                    document.getElementById(animId).innerHTML = "📦";
+                    document.getElementById(animId).style.fontSize = "40px";
+                }
+            }
+
+            // 3. Анимация прокрутки
+            setTimeout(() => {
+                shards.style.transition = 'transform 5s cubic-bezier(0.1, 0, 0.05, 1)';
+                const itemWidth = 140; // ширина (130) + margin (10)
+                const center = window.innerWidth / 2;
+                // Расчет остановки на одном из последних предметов
+                const stopIndex = totalItems - 3; 
+                const randomOffset = Math.floor(Math.random() * 60) - 30;
+                const finalX = -(stopIndex * itemWidth - center + (itemWidth/2) + randomOffset);
+                
+                shards.style.transform = `translateX(${finalX}px)`;
+            }, 50);
+
+            // 4. Финал
+            setTimeout(() => {
+                btn.disabled = false;
+                // Безопасная проверка Haptic
+                try {
+                    if (tg.HapticFeedback && tg.isVersionAtLeast('6.1')) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }
+                } catch(e) { console.log("Haptic not supported"); }
+            }, 5200);
+        }
+
+        // Запуск первого экрана
+        spin();
+    </script>
+</body>
+</html>
