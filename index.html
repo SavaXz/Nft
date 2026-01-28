@@ -3,140 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <title>iOS 26 Dark Liquid Glass</title>
     <style>
-        body { 
-            background: #0d0d0d; color: white; font-family: -apple-system, sans-serif; 
-            margin: 0; display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; height: 100vh; overflow: hidden;
+        /* Живой темный градиент */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Глубокие темные тона */
+            background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #2c3e50, #000000);
+            background-size: 400% 400%;
+            animation: darkGradient 12s ease infinite;
+            overflow: hidden;
         }
-        .case-outer {
-            width: 90%; max-width: 420px; position: relative; 
-            background: #1a1a1a; border: 2px solid #333; border-radius: 20px;
-            overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+
+        @keyframes darkGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .pointer {
-            position: absolute; left: 50%; top: 0; bottom: 0;
-            width: 4px; background: #ff3e3e; z-index: 10; transform: translateX(-2px);
-            box-shadow: 0 0 15px rgba(255, 62, 62, 0.5);
+
+        /* Контейнер меню */
+        .tab-bar {
+            position: fixed;
+            bottom: 30px;
+            width: 92%;
+            max-width: 420px;
+            height: 72px;
+            
+            /* Эффект матового темного стекла */
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 36px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding: 0 10px;
         }
-        .shards-container { height: 160px; display: flex; align-items: center; }
-        .shards {
-            display: flex; will-change: transform;
-            transition: transform 5s cubic-bezier(0.1, 0, 0.05, 1);
+
+        /* Жидкий индикатор-капля */
+        .liquid-indicator {
+            position: absolute;
+            height: 56px;
+            /* Цвет индикатора — мягкий светлый блик */
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            z-index: 1;
+            /* Настройка "тягучей" анимации */
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            pointer-events: none;
         }
-        .item {
-            min-width: 130px; height: 140px; margin: 0 5px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.03); border-radius: 15px; border-bottom: 4px solid #444;
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.4);
+            z-index: 2;
+            transition: color 0.3s ease, transform 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
-        .item-anim { width: 85px; height: 85px; }
-        .item-name { font-size: 10px; margin-top: 10px; font-weight: bold; opacity: 0.8; }
-        
-        button {
-            margin-top: 40px; padding: 18px 55px; background: #ffd700;
-            border: none; border-radius: 50px; font-weight: 900; font-size: 18px;
-            color: #000; cursor: pointer; box-shadow: 0 5px 20px rgba(255,215,0,0.2);
+
+        /* Активная кнопка */
+        .tab-item.active {
+            color: #ffffff;
         }
-        button:disabled { opacity: 0.3; filter: grayscale(1); }
+
+        .tab-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            margin-bottom: 4px;
+        }
+
+        .tab-label {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Анимация нажатия */
+        .tab-item:active {
+            transform: scale(0.85);
+        }
     </style>
 </head>
 <body>
 
-    <h2 id="title">MY MYSTERY BOX</h2>
+    <nav class="tab-bar" id="tabBar">
+        <div class="liquid-indicator" id="indicator"></div>
+        
+        <a href="#" class="tab-item active" onclick="moveIndicator(this)">
+            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="tab-label">Главная</span>
+        </a>
+        
+        <a href="#" class="tab-item" onclick="moveIndicator(this)">
+            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            <span class="tab-label">Кейсы</span>
+        </a>
+        
+        <a href="#" class="tab-item" onclick="moveIndicator(this)">
+            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span class="tab-label">Профиль</span>
+        </a>
 
-    <div class="case-outer">
-        <div class="pointer"></div>
-        <div class="shards-container">
-            <div id="shards" class="shards"></div>
-        </div>
-    </div>
-
-    <button id="spin-btn" onclick="spin()">ОТКРЫТЬ</button>
+        <a href="#" class="tab-item" onclick="moveIndicator(this)">
+            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <span class="tab-label">Настройки</span>
+        </a>
+    </nav>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        const indicator = document.getElementById('indicator');
+        const items = document.querySelectorAll('.tab-item');
 
-        const rarities = [
-            { n: 'COMMON', c: '#4b69ff' },
-            { n: 'RARE', c: '#8847ff' },
-            { n: 'EPIC', c: '#d32ee6' },
-            { n: 'LEGEND', c: '#ffd700' }
-        ];
+        function moveIndicator(element) {
+            items.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
 
-        function spin() {
-            const shards = document.getElementById('shards');
-            const btn = document.getElementById('spin-btn');
+            const rect = element.getBoundingClientRect();
+            const parentRect = document.getElementById('tabBar').getBoundingClientRect();
             
-            // 1. Очистка
-            btn.disabled = true;
-            lottie.destroy(); // Убиваем старые анимации для экономии RAM
-            
-            shards.style.transition = 'none';
-            shards.style.transform = 'translateX(0)';
-            shards.innerHTML = '';
-
-            const totalItems = 40; 
-            const animations = [];
-
-            // 2. Генерация ленты
-            for (let i = 0; i < totalItems; i++) {
-                const rarity = rarities[Math.floor(Math.random() * rarities.length)];
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'item';
-                itemDiv.style.borderBottomColor = rarity.c;
-                
-                const animId = 'anim-' + i;
-                itemDiv.innerHTML = `
-                    <div id="${animId}" class="item-anim"></div>
-                    <div class="item-name" style="color:${rarity.c}">${rarity.n}</div>
-                `;
-                shards.appendChild(itemDiv);
-
-                // Оптимизация: анимируем только последние 10 штук
-                if (i > totalItems - 12) {
-                    lottie.loadAnimation({
-                        container: document.getElementById(animId),
-                        renderer: 'canvas', // Canvas быстрее для мобилок
-                        loop: true,
-                        autoplay: true,
-                        path: 'sticker.json' 
-                    });
-                } else {
-                    document.getElementById(animId).innerHTML = "📦";
-                    document.getElementById(animId).style.fontSize = "40px";
-                }
-            }
-
-            // 3. Анимация прокрутки
-            setTimeout(() => {
-                shards.style.transition = 'transform 5s cubic-bezier(0.1, 0, 0.05, 1)';
-                const itemWidth = 140; // ширина (130) + margin (10)
-                const center = window.innerWidth / 2;
-                // Расчет остановки на одном из последних предметов
-                const stopIndex = totalItems - 3; 
-                const randomOffset = Math.floor(Math.random() * 60) - 30;
-                const finalX = -(stopIndex * itemWidth - center + (itemWidth/2) + randomOffset);
-                
-                shards.style.transform = `translateX(${finalX}px)`;
-            }, 50);
-
-            // 4. Финал
-            setTimeout(() => {
-                btn.disabled = false;
-                // Безопасная проверка Haptic
-                try {
-                    if (tg.HapticFeedback && tg.isVersionAtLeast('6.1')) {
-                        tg.HapticFeedback.notificationOccurred('success');
-                    }
-                } catch(e) { console.log("Haptic not supported"); }
-            }, 5200);
+            // Плавное изменение ширины и позиции
+            indicator.style.width = (rect.width - 12) + 'px';
+            indicator.style.left = (rect.left - parentRect.left + 6) + 'px';
         }
 
-        // Запуск первого экрана
-        spin();
+        // Инициализация позиции при старте
+        window.onload = () => {
+            const activeItem = document.querySelector('.tab-item.active');
+            moveIndicator(activeItem);
+        };
     </script>
 </body>
 </html>
