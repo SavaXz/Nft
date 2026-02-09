@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFT Каталог (Оптимизированный)</title>
+    <title>NFT Каталог (Анимация по клику)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
         body { background: #0a0a0c; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
@@ -12,15 +12,23 @@
             background: #16161a; border-radius: 12px; padding: 10px; 
             border: 1px solid #2d2d33; min-height: 160px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.2s, border-color 0.2s;
         }
-        .anim-box { width: 100px; height: 100px; }
-        .id-label { margin-top: 8px; font-weight: bold; color: #00e5ff; }
-        .status { font-size: 10px; opacity: 0.5; margin-top: 5px; }
+        .card:hover { border-color: #00e5ff; transform: translateY(-2px); }
+        .card:active { transform: scale(0.95); }
+        
+        .anim-box { width: 100px; height: 100px; pointer-events: none; }
+        .id-label { margin-top: 8px; font-weight: bold; color: #00e5ff; pointer-events: none; }
+        .status { font-size: 10px; opacity: 0.5; margin-top: 5px; pointer-events: none; }
+        
+        /* Стиль для индикации, что нужно нажать */
+        .card.waiting { opacity: 0.8; }
+        .card.playing { border-color: #00ffa3; }
     </style>
 </head>
 <body>
     <h1>NFT КАТАЛОГ</h1>
-    <p style="text-align:center; opacity:0.6;">Листай медленно, анимации подгружаются при скролле</p>
+    <p style="text-align:center; opacity:0.6;">Нажми на карточку, чтобы запустить анимацию</p>
     <div class="grid" id="container"></div>
 
     <script>
@@ -28,36 +36,37 @@
 
         for (let i = 2; i <= 155; i++) {
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'card waiting';
             card.innerHTML = `
                 <div id="lottie-${i}" class="anim-box" data-path="${i}.json"></div>
                 <div class="id-label">№${i}</div>
-                <div class="status">Ожидание...</div>
+                <div class="status">Нажми, чтобы загрузить</div>
             `;
+            
+            // Добавляем обработчик клика на всю карточку
+            card.onclick = function() {
+                const animContainer = this.querySelector('.anim-box');
+                const statusLabel = this.querySelector('.status');
+                
+                // Проверяем, не загружена ли уже анимация
+                if (this.classList.contains('waiting')) {
+                    const path = animContainer.getAttribute('data-path');
+                    
+                    lottie.loadAnimation({
+                        container: animContainer,
+                        renderer: 'svg',
+                        loop: true,
+                        autoplay: true,
+                        path: path
+                    });
+                    
+                    this.classList.remove('waiting');
+                    this.classList.add('playing');
+                    statusLabel.innerText = "Играет";
+                }
+            };
+
             container.appendChild(card);
-
-            // Настраиваем "наблюдатель": загружаем только когда карточка в поле зрения
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const el = entry.target;
-                        const path = el.getAttribute('data-path');
-                        
-                        lottie.loadAnimation({
-                            container: el,
-                            renderer: 'svg',
-                            loop: true,
-                            autoplay: true,
-                            path: path
-                        });
-                        
-                        el.nextElementSibling.nextElementSibling.innerText = "Загружено";
-                        observer.unobserve(el); // Больше не следим за этой карточкой
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            observer.observe(card.querySelector('.anim-box'));
         }
     </script>
 </body>
